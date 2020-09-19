@@ -1,2 +1,6 @@
-# godot-console
-In-game console and logger for Godot 3.2
+# Godot-Console
+Lightweight logger and console for Godot 3.2.
+
+# Features
+- Installed as addon.
+- Singletone Logger and Console.
