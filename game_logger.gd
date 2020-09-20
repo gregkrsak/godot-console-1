@@ -1,9 +1,9 @@
-# Child Logger class.
+# Child Logger class. Create custom logic here.
 extends "scripts/logger.gd"
 
 
 func _ready() -> void:
-	set_log_enabled(true)
-	set_stdout(false)
-	set_file_write(true)
+	self.set_log_enabled(true) # Enable logging.
+	self.set_stdout(false) # Disable engine default "print".
+	self.set_file_write(true) # Enable logging to file.
 	return

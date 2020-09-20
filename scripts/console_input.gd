@@ -1,4 +1,4 @@
-# Console ControlInput class.
+# Console input control class. Write commands to the console.
 extends LineEdit
 
 

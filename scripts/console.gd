@@ -1,17 +1,24 @@
-#tool
-#class_name iConsole
+# Singletone Console class.
 extends Node
 
 
 signal message(text)
 
 
-const CONSOLE_COMMAND = preload("console_command.gd")
-const CONSOLE_HISTORY = preload("console_history.gd")
+const CONSOLE_COMMAND = preload("console_command.gd") # Include ConsoleCommand.
+const CONSOLE_HISTORY = preload("console_history.gd") # Include ConsoleHistory.
+
+const ERROR_EMPTY_NAME : String = "Console: Command name is empty."
+const ERROR_INVALID_METHOD : String = "Console: Invalid '%s' method."
+const ERROR_COMMAND_DELETE : String = "Console: Can't delete '%s', command not found."
+const ERROR_COMMAND_EXISTS : String = "Console: '%s' command already exists."
+const ERROR_COMMAND_NOT_FOUND : String = "Console: Command '%s', not found."
+
+const DEFAULT_DESCRIPTION : String = "No description."
 
 
 var _console_commands : Dictionary # Contains all console commands.
-var _console_history : CONSOLE_HISTORY # Contains all the input console commands.
+var _console_history : CONSOLE_HISTORY # Contains the history of input commands.
 
 
 func _init() -> void:
@@ -30,19 +37,20 @@ func get_command(name: String) -> CONSOLE_COMMAND:
 		return null
 
 # Create a new console command.
-func create_command(name: String, method: FuncRef, desc: String = "No description.", arg_count: int = 0) -> bool:
+func create_command(name: String, method: FuncRef, desc := DEFAULT_DESCRIPTION, arg_count := 0) -> bool:
 	if name.empty():
-		Log.error("Console: Command name is empty.")
+		Log.error(ERROR_EMPTY_NAME)
 		return false
 	elif has_command(name):
-		Log.error("Console: '%s' command already exists." % name)
+		Log.error(ERROR_COMMAND_EXISTS % name)
 		return false
 	else:
 		if method.is_valid():
+			# Create a new ConsoleCommand and add to dictionary by command name.
 			_console_commands[name] = CONSOLE_COMMAND.new(name, method, desc, arg_count)
 			return true
 		else:
-			Log.error("Console: Invalid '%s' method." % name)
+			Log.error(ERROR_INVALID_METHOD % name)
 			return false
 
 # Remove the console command by name.
@@ -50,7 +58,7 @@ func remove_command(name: String) -> bool:
 	if has_command(name):
 		return _console_commands.erase(name)
 	else:
-		Log.error("Console: Can't delete '%s', command not found." % name)
+		Log.error(ERROR_COMMAND_DELETE % name)
 		return false
 
 # Enter console command.
@@ -68,10 +76,10 @@ func write_line(input: String) -> bool:
 		
 		# Execute command if command not null.
 		if command != null:
-			command.execute_command(args)
+			command.execute(args)
 			return true
 		else:
-			Log.error("Console: Command '%s', not found." % input)
+			Log.error(ERROR_COMMAND_NOT_FOUND % input)
 			return false
 
 # Print text to console.

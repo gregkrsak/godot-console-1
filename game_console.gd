@@ -1,4 +1,4 @@
-# Child Console class.
+# Child Console class. Create custom logic here.
 extends "scripts/console.gd"
 
 
@@ -14,18 +14,17 @@ func _ready() -> void:
 	create_command("quit", funcref(self, "_console_quit"), "Quit from game.")
 	return
 
-
+# Print all console commands to the console.
 func _console_help() -> void:
 	var string : String
 	
-	for i in self._get_commands():
-		# i is iConsole.Command.
-		string = i.get_name() + "- " + i.get_desc()
-		emit_signal("message", string)
-		
+	for command in self._get_commands():
+		string = command .get_name() + "- " + command .get_desc()
+		self.print_line(string)
+	
 	return
 
-
+# Print test messages to logger and console.
 func _console_test() -> void:
 	var string := "Quick brown fox jumps over the lazy dog."
 	Log.info(string)
@@ -36,40 +35,40 @@ func _console_test() -> void:
 	self.print_line(string)
 	return
 
-
+# Print engine version to the console.
 func _console_version() -> void:
 	var string = "Godot Engine {major}.{minor}.{patch}".format(Engine.get_version_info())
 	self.print_line(string)
 	return
 
-
+# Print any text to the console.
 func _console_print(args: PoolStringArray) -> void:
 	var out = "Print: %s" % args[0]
 	self.print_line(out)
 	return
 
-
+# Add two numbers and print the result to the console.
 func _console_add(args: PoolStringArray) -> void:
 	var a = float(args[0])
 	var b = float(args[1])
-	print_line("Add: %s" % [a + b])
+	self.print_line("Add: %s" % [a + b])
 	return
 
-
+# Subtract two numbers and print the result to the console.
 func _console_subtract(args: PoolStringArray) -> void:
 	var a = float(args[0])
 	var b = float(args[1])
-	print_line("Subtract: %s" % [a - b])
+	self.print_line("Subtract: %s" % [a - b])
 	return
 
-
+# Multiply two numbers and print the result to the console.
 func _console_multiply(args: PoolStringArray) -> void:
 	var a = float(args[0])
 	var b = float(args[1])
-	print_line("Multiply: %s" % [a * b])
+	self.print_line("Multiply: %s" % [a * b])
 	return
 
-
+# Divide two numbers and print the result to the console.
 func _console_divide(args: PoolStringArray) -> void:
 	var a = float(args[0])
 	var b = float(args[1])
@@ -77,10 +76,10 @@ func _console_divide(args: PoolStringArray) -> void:
 		Log.error("Division by zero.")
 		return
 	else:
-		print_line("Aivide: %s" % [a / b])
+		self.print_line("Aivide: %s" % [a / b])
 		return
 
-
+# Quit the game.
 func _console_quit() -> void:
 	get_tree().quit()
 	return

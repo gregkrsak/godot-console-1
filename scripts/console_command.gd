@@ -1,8 +1,8 @@
-# Console CommandClass.
+# ConsoleCommand class.
 extends Reference
 
 
-const MESSAGE_ARG_COUNT : String = "'%s' command must have %s arguments."
+const WARNING_ARG_COUNT : String = "'%s' command must have %s arguments."
 
 
 var _name : String
@@ -35,7 +35,7 @@ func has_arg() -> bool:
 	return get_arg_count() > 0
 
 # Execute command FuncRef.
-func execute_command(args: PoolStringArray) -> void:
+func execute(args: PoolStringArray) -> void:
 	var command_name : String = args[0]
 	var arg_count : int = get_arg_count()
 	
@@ -43,7 +43,7 @@ func execute_command(args: PoolStringArray) -> void:
 		args.remove(0) # Remove command name from arguments.
 		# Warning if there are fewer arguments than necessary.
 		if args.size() < arg_count:
-			Log.warning(MESSAGE_ARG_COUNT % [command_name, arg_count])
+			Log.warning(WARNING_ARG_COUNT % [command_name, arg_count])
 			return
 		else: # Call a function with arguments.
 			_method.call_func(args)

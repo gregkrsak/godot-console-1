@@ -1,9 +1,8 @@
-# Console ControlOutput class.
+# Console output control class. Output console messages.
 extends RichTextLabel
 
 
-const LOGGER_MESSAGE = preload("logger_message.gd")
-
+const LOGGER_MESSAGE = preload("logger_message.gd") # Include LoggerMessage.
 
 const LEVEL = LOGGER_MESSAGE.Level
 const LEVEL_COLOR = {
@@ -14,8 +13,7 @@ const LEVEL_COLOR = {
 	LEVEL.FATAL: Color.red,
 	}
 
-# Color for console messages.
-const COLOR_CONSOLE := Color.darkorange
+const COLOR_CONSOLE := Color.darkorange # Color for console messages.
 
 
 func _init() -> void:
@@ -23,7 +21,7 @@ func _init() -> void:
 	self.size_flags_horizontal = SIZE_EXPAND_FILL
 	self.scroll_following = true
 	self.selection_enabled = true
-	
+	self.rect_min_size = Vector2(128, 128)
 	self.focus_mode = Control.FOCUS_NONE
 	return
 
@@ -33,7 +31,7 @@ func _ready() -> void:
 	Console.connect("message", self, "print_line")
 	return
 
-
+# Print any text to console.
 func print_line(text: String) -> bool:
 	if text.empty():
 		return false
@@ -41,13 +39,15 @@ func print_line(text: String) -> bool:
 		_new_line(text, COLOR_CONSOLE)
 		return true
 
-
+# Print logger message to console.
 func print_message(message: LOGGER_MESSAGE) -> void:
-	_new_line(message.to_string(), LEVEL_COLOR[message.get_level()])
+	var text = message.to_string()
+	var color = LEVEL_COLOR[message.get_level()]
+	_new_line(text, color)
 	return
 
 
-func _new_line(text: String, color: Color) -> void:
+func _new_line(text: String, color: Color = COLOR_CONSOLE) -> void:
 	self.newline()
 	self.push_color(color)
 	self.add_text(text)

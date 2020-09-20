@@ -1,52 +1,51 @@
-#Console History class.
+# ConsoleHistory class.
 extends Reference
 
 
 var _history : Array
-var _index : int
+var _history_index : int # Used to iterate over history.
 
-
+# Add a string to the history.
 func add_history(input: String) -> bool:
 	if input.empty():
 		return false
 	else:
 		_history.append(input)
-		_index = _history.size()
-#		_history.push_front(input)
-		print(_history.size())
+		_history_index = _history.size()
 		return true
 
 
 func set_index(index: int) -> void:
 	if index < 0:
-		_index = 0
+		_history_index = _history.size() - 1
 	elif index > _history.size() - 1:
-		_index = _history.size() - 1
+		_history_index = 0
 	else:
-		_index = index
-	
-	print(_index)
+		_history_index = index
 	return
 
 
 func get_index() -> int:
-	return _index
+	return _history_index
 
-
+# Get the previous string from history.
 func get_prev() -> String:
-	set_index(_index - 1)
-	return get_history(_index)
+	set_index(get_index() - 1)
+	return get_history(get_index())
 
-
+# Get the next string from history.
 func get_next() -> String:
-	set_index(_index + 1)
-	return get_history(_index)
+	set_index(get_index() + 1)
+	return get_history(get_index())
 
-
+# Get history string by index.
 func get_history(index: int) -> String:
-	if index < 0:
-		return _history.pop_front()
-	elif index > _history.size():
-		return _history.pop_back()
+	if _history.empty():
+		return ""
 	else:
-		return _history[index]
+		if index < 0:
+			return _history.pop_front()
+		elif index > _history.size() - 1:
+			return _history.pop_back()
+		else:
+			return _history[index]

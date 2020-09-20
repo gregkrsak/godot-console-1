@@ -1,4 +1,4 @@
-#Logger class.
+# Singletone Logger class.
 extends Node
 
 
@@ -8,15 +8,6 @@ signal new_message(message)
 const MESSAGE = preload("logger_message.gd")
 const MESSAGE_LEVEL = MESSAGE.Level
 
-#const LEVEL_NAME = {
-#	Level.INFO: "INFO",
-#	Level.DEBUG: "DEBUG",
-#	Level.WARNING: "WARNING",
-#	Level.ERROR: "ERROR",
-#	Level.FATAL: "FATAL",
-#	}
-
-const MAX_MESSAGES_COUNT : int = 1024
 const DEFAULT_FILE_PATH : String = "res://log/test.log"
 
 
@@ -24,7 +15,6 @@ var _log_enabled : bool
 var _stdout_enabled : bool
 var _file_write_enabled : bool
 
-#var _message : Message
 var _messages : Array
 var _file : File
 
@@ -74,34 +64,34 @@ func _exit_tree() -> void:
 	else:
 		return
 
-
+# Create a info message.
 func info(text: String) -> void:
-	create_message(text, MESSAGE_LEVEL.INFO)
+	_create_message(text, MESSAGE_LEVEL.INFO)
 	return
 
-
+# Create a debug message.
 func debug(text: String) -> void:
-	create_message(text, MESSAGE_LEVEL.DEBUG)
+	_create_message(text, MESSAGE_LEVEL.DEBUG)
 	return
 
-
+# Create a warning message.
 func warning(text: String) -> void:
-	create_message(text, MESSAGE_LEVEL.WARNING)
+	_create_message(text, MESSAGE_LEVEL.WARNING)
 	return
 
-
+# Create a error message.
 func error(text: String) -> void:
-	create_message(text, MESSAGE_LEVEL.ERROR)
+	_create_message(text, MESSAGE_LEVEL.ERROR)
 	return
 
-
+# Create a fatal message.
 func fatal(text: String) -> void:
-	create_message(text, MESSAGE_LEVEL.FATAL)
+	_create_message(text, MESSAGE_LEVEL.FATAL)
 	return
 
-
-func create_message(text: String, level: int = MESSAGE_LEVEL.Level.INFO) -> void:
-	if is_log_enabled() and !text.empty():
+# Create a new logger message.
+func _create_message(text: String, level: int = MESSAGE_LEVEL.Level.INFO) -> void:
+	if is_log_enabled() and not text.empty():
 		var message = MESSAGE.new(text, level)
 		_messages.append(message)
 		emit_signal("new_message", message)
