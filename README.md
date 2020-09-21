@@ -1,6 +1,8 @@
 # Godot-Console
 Simple logger and console for Godot 3.2.
 
+![](https://i.imgur.com/xmpib6g.png)
+
 # Features
 - Installed as plugin.
 - Singletone Logger and Console.
