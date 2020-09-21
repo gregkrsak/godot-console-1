@@ -6,7 +6,7 @@ func _ready() -> void:
 	create_command("help", funcref(self, "_console_help"), "Write all avaible command.")
 	create_command("version", funcref(self, "_console_version"), "Show Engine version.")
 	create_command("test", funcref(self, "_console_test"), "Test console output.")
-	create_command("print", funcref(self, "_console_print"), "Print arguments to console.")
+	create_command("print", funcref(self, "_console_print"), "Print any string to console.", 1)
 	create_command("add", funcref(self, "_console_add"), "Adds two numbers.", 2)
 	create_command("subtract", funcref(self, "_console_subtract"), "Subtract two number", 2)
 	create_command("multiply", funcref(self, "_console_multiply"), "Multiply two number.", 2)
@@ -43,8 +43,8 @@ func _console_version() -> void:
 
 # Print any text to the console.
 func _console_print(args: PoolStringArray) -> void:
-	var out = "Print: %s" % args[0]
-	self.print_line(out)
+	var string = "Print: %s" % args[0]
+	self.print_line(string)
 	return
 
 # Add two numbers and print the result to the console.

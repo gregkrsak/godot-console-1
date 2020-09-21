@@ -7,13 +7,24 @@ Simple logger and console for Godot 3.2.
 - History of entered console commands.
 
 # Installation:
-1. Clone or download this project to to your addons folder.
+1. Clone or download this project to `addons/godot-console` folder.
 2. Enabled `Logger & Console` in Plugins.
-3. Add new action to the Input Map: `show_console`
+3. Add new action to the Input Map: `show_console`.
 4. Add `ConsoleWindow` node to the scene.
 4. Profit.
 
 # Usage:
+## Logger:
+```gdscript
+func _ready() -> void:
+	var string = "Hello, World!"
+	Log.info(string)
+	Log.debug(string)
+	Log.warning(string)
+	Log.error(string)
+	Log.fatal(string)
+```
+
 ## Register console command:
 ```gdscript
 func _ready() -> void:
@@ -29,16 +40,14 @@ func _ready() -> void:
 ```gdscript
 func _console_player_up() -> void:
 	self.level_up()
-	return
 ```
 
-## Methods for console command with arguments receive PoolString. Arguments need cast to target type.
+## Methods for console command with arguments receive PoolStringArray. Arguments need cast to target type.
 ```gdscript
 func _console_player_teleport(args: PoolStringArray) -> void:
 	var x = float(args[0])
 	var y = float(args[1])
 	self.position = Vector2(x, y)
-	return
 ```
 
 ## Examples:
@@ -60,6 +69,7 @@ func _ready() -> void:
 ```gdscript
 func _console_player_up() -> void:
 	self.level_up()
+	Log.info("Console: Player level_up")
 ```
 
 ### Methods for a console commands with one argument:
@@ -67,11 +77,13 @@ func _console_player_up() -> void:
 func _console_player_invisible(args: PoolStringArray) -> void:
 	var value = bool(args[0]) # Cast argument string to bool type.
 	self.invisible = value
+	Log.info("Console: Player invisible " + str(value))
 ```
 ```gdscript
 func _console_player_add_money(args: PoolStringArray) -> void:
 	var value = int(args[0]) # Cast argument string to int type.
 	self.money += value
+	Log.info("Console: Player added money " + str(value))
 ```
 
 ### Method for a console command with two arguments.
@@ -80,4 +92,5 @@ func _console_player_teleport(args: PoolStringArray) -> void:
 	var x = float(args[0]) # Cast argument string to float type.
 	var y = float(args[1])
 	self.position = Vector2(x, y)
+	Log.info("Console: Player teleported to " + str(self.position))
 ```

@@ -8,13 +8,9 @@ signal message(text)
 const CONSOLE_COMMAND = preload("console_command.gd") # Include ConsoleCommand.
 const CONSOLE_HISTORY = preload("console_history.gd") # Include ConsoleHistory.
 
-const ERROR_EMPTY_NAME : String = "Console: Command name is empty."
-const ERROR_INVALID_METHOD : String = "Console: Invalid '%s' method."
-const ERROR_COMMAND_DELETE : String = "Console: Can't delete '%s', command not found."
-const ERROR_COMMAND_EXISTS : String = "Console: '%s' command already exists."
-const ERROR_COMMAND_NOT_FOUND : String = "Console: Command '%s', not found."
+const ASSERT_COMMAND_EXISTS = "Console command '%s' already exists."
 
-const DEFAULT_DESCRIPTION : String = "No description."
+const WARNING_COMMAND_NOT_FOUND = "Console: Command '%s', not found."
 
 
 var _console_commands : Dictionary # Contains all console commands.
@@ -37,29 +33,15 @@ func get_command(name: String) -> CONSOLE_COMMAND:
 		return null
 
 # Create a new console command.
-func create_command(name: String, method: FuncRef, desc := DEFAULT_DESCRIPTION, arg_count := 0) -> bool:
-	if name.empty():
-		Log.error(ERROR_EMPTY_NAME)
-		return false
-	elif has_command(name):
-		Log.error(ERROR_COMMAND_EXISTS % name)
-		return false
-	else:
-		if method.is_valid():
-			# Create a new ConsoleCommand and add to dictionary by command name.
-			_console_commands[name] = CONSOLE_COMMAND.new(name, method, desc, arg_count)
-			return true
-		else:
-			Log.error(ERROR_INVALID_METHOD % name)
-			return false
+func create_command(name: String, method: FuncRef, desc : String = "", arg_count := 0) -> void:
+	assert(not has_command(name), ASSERT_COMMAND_EXISTS % name)
+	_console_commands[name] = CONSOLE_COMMAND.new(name, method, desc, arg_count)
+	return
 
 # Remove the console command by name.
 func remove_command(name: String) -> bool:
-	if has_command(name):
-		return _console_commands.erase(name)
-	else:
-		Log.error(ERROR_COMMAND_DELETE % name)
-		return false
+	assert(not has_command(name), ASSERT_COMMAND_EXISTS % name)
+	return _console_commands.erase(name)
 
 # Enter console command.
 func write_line(input: String) -> bool:
@@ -69,7 +51,7 @@ func write_line(input: String) -> bool:
 		_console_history.add_history(input) # Add input string to history.
 		
 		var args : PoolStringArray = input.split(" ", false) # Split input string by spaces.
-		var name : String = args[0] # First word in input string must be a command name.
+		var name : String = args[0] # First word in input a command name.
 		var command : CONSOLE_COMMAND = get_command(name) # Get command or null by name.
 		
 		self.print_line("-> " + name) # Print in console command name.
@@ -79,7 +61,7 @@ func write_line(input: String) -> bool:
 			command.execute(args)
 			return true
 		else:
-			Log.error(ERROR_COMMAND_NOT_FOUND % input)
+			Log.warning(WARNING_COMMAND_NOT_FOUND % input)
 			return false
 
 # Print text to console.

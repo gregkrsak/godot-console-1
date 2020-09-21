@@ -90,7 +90,7 @@ func fatal(text: String) -> void:
 	return
 
 # Create a new logger message.
-func _create_message(text: String, level: int = MESSAGE_LEVEL.Level.INFO) -> void:
+func _create_message(text: String, level: int) -> void:
 	if is_log_enabled() and not text.empty():
 		var message = MESSAGE.new(text, level)
 		_messages.append(message)

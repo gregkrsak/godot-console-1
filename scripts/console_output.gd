@@ -9,7 +9,7 @@ const LEVEL_COLOR = {
 	LEVEL.INFO: Color.gray,
 	LEVEL.DEBUG: Color.dimgray,
 	LEVEL.WARNING: Color.yellow,
-	LEVEL.ERROR: Color.firebrick,
+	LEVEL.ERROR: Color.red,
 	LEVEL.FATAL: Color.red,
 	}
 

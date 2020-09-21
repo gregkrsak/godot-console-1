@@ -1,5 +1,5 @@
+# ConsoleWindow class. 
 tool
-class_name ConsoleWindow, "res://addons/godot-console/icons/console_window.svg"
 extends "scripts/console_window.gd"
 
 
