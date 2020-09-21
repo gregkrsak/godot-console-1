@@ -8,7 +8,8 @@ signal new_message(message)
 const MESSAGE = preload("logger_message.gd")
 const MESSAGE_LEVEL = MESSAGE.Level
 
-const DEFAULT_FILE_PATH : String = "res://log/test.log"
+const DEFAULT_DIR_PATH = "res://log/"
+const DEFAULT_FILE_NAME = "test.log"
 
 
 var _log_enabled : bool
@@ -38,7 +39,13 @@ func is_stdout() -> bool:
 
 
 func set_file_write(value: bool) -> void:
+	if value:
+		_open_file()
+	else:
+		_close_file()
+		
 	_file_write_enabled = value
+	self.info("Logger: File logging - " + str(value))
 	return
 
 
@@ -47,22 +54,14 @@ func is_file_write() -> bool:
 
 
 func _enter_tree() -> void:
-	_file = File.new()
-	_file.open(DEFAULT_FILE_PATH, File.WRITE_READ)
-	
 	if is_file_write():
-		return
-	else:
-		return
+		_open_file()
+	return
 
 
 func _exit_tree() -> void:
-	_file.close()
-	if _file.is_open():
-		_file.close()
-		return
-	else:
-		return
+	_close_file()
+	return
 
 # Create a info message.
 func info(text: String) -> void:
@@ -104,3 +103,20 @@ func _create_message(text: String, level: int) -> void:
 			return
 	else:
 		return
+
+
+func _open_file() -> void:
+	var dir = Directory.new()
+	if dir.open(DEFAULT_DIR_PATH) != OK:
+		dir.make_dir(DEFAULT_DIR_PATH)
+	
+	_file = File.new()
+	_file.open(DEFAULT_DIR_PATH + DEFAULT_FILE_NAME, File.WRITE_READ)
+	
+	return
+
+
+func _close_file() -> void:
+	if _file != null:
+		_file.close()
+	return

@@ -3,6 +3,7 @@ extends "scripts/console.gd"
 
 
 func _ready() -> void:
+	# Create command for self:
 	create_command("help", funcref(self, "_console_help"), "Write all avaible command.")
 	create_command("version", funcref(self, "_console_version"), "Show Engine version.")
 	create_command("test", funcref(self, "_console_test"), "Test console output.")
@@ -12,6 +13,8 @@ func _ready() -> void:
 	create_command("multiply", funcref(self, "_console_multiply"), "Multiply two number.", 2)
 	create_command("divide", funcref(self, "_console_divide"), "Divide two number.", 2)
 	create_command("quit", funcref(self, "_console_quit"), "Quit from game.")
+	# Create command for another object:
+	create_command("log_enabled", funcref(Log, "_console_log_enabled"), "Set logging to file.", 1)
 	return
 
 # Print all console commands to the console.

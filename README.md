@@ -75,7 +75,7 @@ func _console_player_up() -> void:
 ### Methods for a console commands with one argument:
 ```gdscript
 func _console_player_invisible(args: PoolStringArray) -> void:
-	var value = bool(args[0]) # Cast argument string to bool type.
+	var value = int(args[0]) # For bool you need cast string to integer.
 	self.invisible = value
 	Log.info("Console: Player invisible " + str(value))
 ```
