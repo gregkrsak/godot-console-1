@@ -1,85 +1,143 @@
-# Singletone Console class.
 extends Node
 
 
 signal message(text)
 
 
-const CONSOLE_COMMAND = preload("console_command.gd") # Include ConsoleCommand.
-const CONSOLE_HISTORY = preload("console_history.gd") # Include ConsoleHistory.
+const CONSOLE_COMMAND = preload("console_command.gd")
+const CONSOLE_HISTORY = preload("console_history.gd")
 
-const ASSERT_COMMAND_EXISTS = "Console command '%s' already exists."
+const BOOL   : int = CONSOLE_COMMAND.BOOL
+const INT    : int = CONSOLE_COMMAND.INT
+const FLOAT  : int = CONSOLE_COMMAND.FLOAT
+const STRING : int = CONSOLE_COMMAND.STRING
 
-const WARNING_COMMAND_NOT_FOUND = "Console: Command '%s', not found."
 
-
-var _console_commands : Dictionary # Contains all console commands.
-var _console_history : CONSOLE_HISTORY # Contains the history of input commands.
+var _console_command : Dictionary
+var _console_history : CONSOLE_HISTORY
 
 
 func _init() -> void:
 	_console_history = CONSOLE_HISTORY.new()
+	
+	create_command("help", self, "_command_help", "Show all console command")
+	create_command("version", self, "_command_version", "Show Engine version")
+	create_command("test", self, "_command_test", "Test console output")
+	create_command("print", self, "_command_print", "Print string to console", [STRING])
+	create_command("add", self, "_command_add", "Adds two numbers", [FLOAT, FLOAT])
+	create_command("subtract", self, "_command_subtract", "Subtract two number", [FLOAT, FLOAT])
+	create_command("quit", self, "_command_quit", "Quit from game")
 	return
 
-# Return true if contains a console command with the same name.
-func has_command(name: String) -> bool:
-	return _console_commands.has(name)
 
-# Return command or null.
-func get_command(name: String) -> CONSOLE_COMMAND:
-	if has_command(name):
-		return _console_commands[name]
-	else:
-		return null
+func has_command(name: String) -> bool:
+	return _get_commands().has(name)
 
 # Create a new console command.
-func create_command(name: String, method: FuncRef, desc : String = "", arg_count := 0) -> void:
-	assert(not has_command(name), ASSERT_COMMAND_EXISTS % name)
-	_console_commands[name] = CONSOLE_COMMAND.new(name, method, desc, arg_count)
+func create_command(
+	name: String,
+	instance: Object,
+	funcname: String,
+	desc: String = "",
+	args: PoolIntArray = []
+	) -> void:
+	
+	assert(not has_command(name), "The console has a '%s' command" % name)
+	_get_commands()[name] = CONSOLE_COMMAND.new(name, funcref(instance, funcname), desc, args)
+	
 	return
 
-# Remove the console command by name.
-func remove_command(name: String) -> bool:
-	assert(not has_command(name), ASSERT_COMMAND_EXISTS % name)
-	return _console_commands.erase(name)
-
-# Enter console command.
-func write_line(input: String) -> bool:
+# Write a console command.
+func write_command(input: String) -> void:
 	if input.empty():
-		return false
-	else:
-		_console_history.add_history(input) # Add input string to history.
-		
-		var args : PoolStringArray = input.split(" ", false) # Split input string by spaces.
-		var name : String = args[0] # First word in input a command name.
-		var command : CONSOLE_COMMAND = get_command(name) # Get command or null by name.
-		
-		self.print_line("-> " + name) # Print in console command name.
-		
-		# Execute command if command not null.
-		if command != null:
-			command.execute(args)
-			return true
-		else:
-			Log.warning(WARNING_COMMAND_NOT_FOUND % input)
-			return false
+		return
+	
+	_get_history().add_string(input)
+	
+	var args : PoolStringArray = input.split(" ", false)
+	var name : String = args[0]
+	
+	args.remove(0) # Remove command name from arguments.
+	
+	self.print_line("-> " + input) # Print in console input command.
+	
+	if has_command(name):
+		var output = _get_command(name).execute(args)
+		self.print_line(output)
+		return
+	
+	self.print_line("Console command '%s' not found." % name)
+	return
 
-# Print text to console.
-func print_line(input: String) -> bool:
+# Print a line to the console.
+func print_line(input: String) -> void:
 	if input.empty():
-		return false
-	else:
-		emit_signal("message", input)
-		return true
+		return
+	
+	emit_signal("message", input)
+	return
 
 # Return the previus console command.
 func get_prev_command() -> String:
-	return _console_history.get_prev()
+	return _get_history().get_prev()
 
 # Return the next console command.
 func get_next_command() -> String:
-	return _console_history.get_next()
+	return _get_history().get_next()
 
-# Returns an array of all console commands.
-func _get_commands() -> Array:
-	return _console_commands.values()
+# Return autocomplete cosnole command.
+func get_autocomplete(text: String) -> String:
+	for name in _get_commands():
+		if name.begins_with(text):
+			return name
+	
+	return text
+
+
+func _get_command(name: String) -> CONSOLE_COMMAND:
+	assert(has_command(name), "Console command '%s' not found" % name)
+	return _get_commands().get(name)
+
+
+func _get_commands() -> Dictionary:
+	return _console_command
+
+
+func _get_history() -> CONSOLE_HISTORY:
+	return _console_history
+
+
+func _command_help() -> void:
+	var string : String
+	
+	var command : CONSOLE_COMMAND
+	for i in _get_commands():
+		command = _get_command(i)
+		self.print_line(command.to_string())
+	
+	return
+
+
+func _command_version() -> String:
+	return "Godot Engine {major}.{minor}.{patch}".format(Engine.get_version_info())
+
+
+func _command_test() -> String:
+	return "Quick brown fox jumps over the lazy dog."
+
+
+func _command_print(text: String) -> String:
+	return text
+
+
+func _command_add(a: float, b: float) -> String:
+	return "Result: " + str(a + b)
+
+
+func _command_subtract(a: float, b: float) -> String:
+	return "Result: " + str(a - b)
+
+
+func _command_quit() -> void:
+	get_tree().quit()
+	return

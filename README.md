@@ -1,98 +1,50 @@
 # Godot-Console
 Simple logger and console for Godot 3.2.
 
-![](https://i.imgur.com/xmpib6g.png)
+![](https://i.imgur.com/5F3aStc.png)
 
 # Features
 - Installed as plugin.
-- Singletone Logger and Console.
+- Singletone Console.
 - History of entered console commands.
 
 # Installation:
 1. Clone or download this project to `addons/godot-console` folder.
-2. Enabled `Logger & Console` in Plugins.
-3. Add new action to the Input Map: `show_console`.
-4. Add `ConsoleWindow` node to the scene.
+2. Enabled `Godot Console` in Plugins.
+3. Add `ConsoleContainer` node to the scene.
 4. Profit.
 
 # Usage:
-## Logger:
+## Methods for a console command without arguments:
 ```gdscript
 func _ready() -> void:
-	var string = "Hello, World!"
-	Log.info(string)
-	Log.debug(string)
-	Log.warning(string)
-	Log.error(string)
-	Log.fatal(string)
+	Console.create_command("heal", self, "_command_heal", "Command heals the player")
+```
+```gdscript
+func _command_heal() -> String:
+	self.set_health(HEALTH_MAX)
+	# Return a string for console output. Optional.
+	return "Player is completely healed"
 ```
 
-## Register console command:
+## Methods for a console command with one argument:
 ```gdscript
 func _ready() -> void:
-	var name = "level_up" # Name of the console command. Used to enter a command in the console.
-	var func_ref = funcref(self, "_console_player_up") # Reference to a function in an object.
-	var desc = "Level up player." # Description of the console command. May be empty.
-	var arg_count = 0 # Number of arguments for the console command. The default is 0.
-	# Register the command in the Console.
-	Console.create_command(name, func_ref, desc, arg_count)
+	Console.create_command("invisible", self, "_command_invisible", "Invisible player", [Console.BOOL])
+```
+```gdscript
+func _command_invisible(value: bool) -> String:
+	self.set_invisible(value)
+	return "Player invisible: %s" % is_invisible()
 ```
 
-## Methods for a console command without arguments should not receive argument:
+## Methods for a console command with two argument:
 ```gdscript
-func _console_player_up() -> void:
-	self.level_up()
-```
-
-## Methods for console command with arguments receive PoolStringArray. Arguments need cast to target type.
-```gdscript
-func _console_player_teleport(args: PoolStringArray) -> void:
-	var x = float(args[0])
-	var y = float(args[1])
-	self.position = Vector2(x, y)
-```
-
-## Examples:
-```gdscript
-# Player class.
 func _ready() -> void:
-	# Create a console command without arguments.
-	Console.create_command("level_up", funcref(self, "_console_player_up"), "Level up player.")
-	
-	# Create console commands with one argument.
-	Console.create_command("invisible", funcref(self, "_console_player_invisible"), "Make player invisible.", 1)
-	Console.create_command("add_money", funcref(self, "_console_player_add_money"), "Add money to a player", 1)
-	
-	# Create a console command with two arguments.
-	Console.create_command("teleport", funcref(self, "_console_player_teleport"), "Teleport player to position.", 2)
-```
-
-### Method for a console command without arguments:
-```gdscript
-func _console_player_up() -> void:
-	self.level_up()
-	Log.info("Console: Player level_up")
-```
-
-### Methods for a console commands with one argument:
-```gdscript
-func _console_player_invisible(args: PoolStringArray) -> void:
-	var value = int(args[0]) # For bool you need cast string to integer.
-	self.invisible = value
-	Log.info("Console: Player invisible " + str(value))
+	Console.create_command("tp", self, "_command_teleport", "Teleports the player", [Console.FLOAT, Console.FLOAT])	
 ```
 ```gdscript
-func _console_player_add_money(args: PoolStringArray) -> void:
-	var value = int(args[0]) # Cast argument string to int type.
-	self.money += value
-	Log.info("Console: Player added money " + str(value))
-```
-
-### Method for a console command with two arguments.
-```gdscript
-func _console_player_teleport(args: PoolStringArray) -> void:
-	var x = float(args[0]) # Cast argument string to float type.
-	var y = float(args[1])
-	self.position = Vector2(x, y)
-	Log.info("Console: Player teleported to " + str(self.position))
+func _command_teleport(x: float, y: float) -> void:
+	self.set_position(Vector2(x, y))
+	return
 ```
