@@ -1,24 +1,30 @@
+# Copyright © 2020 Mansur Isaev and contributors - MIT License
+# See `LICENSE.md` included in the source distribution for details.
+
 extends Node
 
 
 signal message(text)
 
 
-const CONSOLE_COMMAND = preload("console_command.gd")
-const CONSOLE_HISTORY = preload("console_history.gd")
+const ConsoleCommand = preload("console_command.gd")
+const ConsoleHistory = preload("console_history.gd")
+const ConsoleAutocomplite = preload("console_autocomplete.gd")
 
-const BOOL   : int = CONSOLE_COMMAND.BOOL
-const INT    : int = CONSOLE_COMMAND.INT
-const FLOAT  : int = CONSOLE_COMMAND.FLOAT
-const STRING : int = CONSOLE_COMMAND.STRING
+const BOOL   : int = ConsoleCommand.BOOL
+const INT    : int = ConsoleCommand.INT
+const FLOAT  : int = ConsoleCommand.FLOAT
+const STRING : int = ConsoleCommand.STRING
 
 
 var _console_command : Dictionary
-var _console_history : CONSOLE_HISTORY
+var _console_history : ConsoleHistory
+var _console_autocomplete : ConsoleAutocomplite
 
 
 func _init() -> void:
-	_console_history = CONSOLE_HISTORY.new()
+	_console_history = ConsoleHistory.new()
+	_console_autocomplete = ConsoleAutocomplite.new()
 	
 	create_command("help", self, "_command_help", "Show all console command")
 	create_command("version", self, "_command_version", "Show Engine version")
@@ -43,7 +49,8 @@ func create_command(
 	) -> void:
 	
 	assert(not has_command(name), "The console has a '%s' command" % name)
-	_get_commands()[name] = CONSOLE_COMMAND.new(name, funcref(instance, funcname), desc, args)
+	_get_commands()[name] = ConsoleCommand.new(name, funcref(instance, funcname), desc, args)
+	_get_autocomplete().set_commands(_get_commands().keys())
 	
 	return
 
@@ -59,7 +66,7 @@ func write_command(input: String) -> void:
 	
 	args.remove(0) # Remove command name from arguments.
 	
-	self.print_line("-> " + input) # Print in console input command.
+	self.print_line("-> " + input) # Print in console input string.
 	
 	if has_command(name):
 		var output = _get_command(name).execute(args)
@@ -87,14 +94,10 @@ func get_next_command() -> String:
 
 # Return autocomplete cosnole command.
 func get_autocomplete(text: String) -> String:
-	for name in _get_commands():
-		if name.begins_with(text):
-			return name
-	
-	return text
+	return _get_autocomplete().get_string(text)
 
 
-func _get_command(name: String) -> CONSOLE_COMMAND:
+func _get_command(name: String) -> ConsoleCommand:
 	assert(has_command(name), "Console command '%s' not found" % name)
 	return _get_commands().get(name)
 
@@ -103,14 +106,18 @@ func _get_commands() -> Dictionary:
 	return _console_command
 
 
-func _get_history() -> CONSOLE_HISTORY:
+func _get_history() -> ConsoleHistory:
 	return _console_history
+
+
+func _get_autocomplete() -> ConsoleAutocomplite:
+	return _console_autocomplete
 
 
 func _command_help() -> void:
 	var string : String
 	
-	var command : CONSOLE_COMMAND
+	var command : ConsoleCommand
 	for i in _get_commands():
 		command = _get_command(i)
 		self.print_line(command.to_string())

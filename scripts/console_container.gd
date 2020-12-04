@@ -1,3 +1,6 @@
+# Copyright © 2020 Mansur Isaev and contributors - MIT License
+# See `LICENSE.md` included in the source distribution for details.
+
 tool
 extends VBoxContainer
 
@@ -39,23 +42,29 @@ class ConsoleInput extends LineEdit:
 		self.clear_button_enabled = true
 		self.caret_blink = true
 		self.placeholder_text = "Command"
+		self.clear_button_enabled = true
 		return
 	
 	func _gui_input(event: InputEvent) -> void:
 		if Input.is_key_pressed(KEY_ENTER):
 			_enter_text()
 		
-		if Input.is_key_pressed(KEY_UP):
-			self.text = Console.get_prev_command()
+		elif Input.is_key_pressed(KEY_UP):
+			set_text(Console.get_prev_command())
 		
-		if Input.is_key_pressed(KEY_DOWN):
-			self.text = Console.get_next_command()
+		elif Input.is_key_pressed(KEY_DOWN):
+			set_text(Console.get_next_command())
 		
-		if Input.is_key_pressed(KEY_TAB):
-			self.text = Console.get_autocomplete(text)
+		elif Input.is_key_pressed(KEY_TAB):
+			set_text(Console.get_autocomplete(text))
 		
 		return
-		
+	
+	func set_text(text: String) -> void:
+		.set_text(text)
+		caret_position = text.length()
+		return
+	
 	func _enter_text() -> void:
 		Console.write_command(self.text)
 		self.clear()
@@ -67,6 +76,8 @@ var _console_input  : ConsoleInput
 
 
 func _init() -> void:
+	self.focus_mode = FOCUS_NONE
+	
 	_console_output = ConsoleOutput.new()
 	self.add_child(_console_output)
 	

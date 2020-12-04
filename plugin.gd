@@ -1,3 +1,6 @@
+# Copyright © 2020 Mansur Isaev and contributors - MIT License
+# See `LICENSE.md` included in the source distribution for details.
+
 tool
 extends EditorPlugin
 

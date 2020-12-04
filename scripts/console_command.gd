@@ -1,72 +1,13 @@
-extends Object
+# Copyright © 2020 Mansur Isaev and contributors - MIT License
+# See `LICENSE.md` included in the source distribution for details.
+
+extends Reference
 
 
-class argType extends Object:
-	static func get_name() -> String:
-		return str(null)
-	
-	static func is_valid(string: String) -> bool:
-		return false
-	
-	static func convert_string(string: String):
-		return null
-
-
-class argBool extends argType:
-	const TRUE  = "true"
-	const FALSE = "false"
-	
-	static func get_name() -> String:
-		return "bool"
-	
-	static func is_valid(string: String) -> bool:
-		if string == TRUE or string == FALSE:
-			return true
-		
-		return string.is_valid_integer()
-	
-	static func convert_string(string: String) -> bool:
-		if string == TRUE:
-			return true
-		
-		if string == FALSE:
-			return false
-		
-		return convert(string, TYPE_INT) > 0
-
-
-class argInt extends argType:
-	static func get_name() -> String:
-		return "int"
-	
-	static func is_valid(string: String) -> bool:
-		return string.is_valid_integer()
-	
-	static func convert_string(string: String) -> int:
-		return convert(string, TYPE_INT)
-
-
-class argFloat extends argType:
-	static func get_name() -> String:
-		return "float"
-	
-	static func is_valid(string: String) -> bool:
-		return string.is_valid_float()
-	
-	static func convert_string(string: String) -> float:
-		return convert(string, TYPE_REAL)
-
-
-class argString extends argType:
-	static func get_name() -> String:
-			return "string"
-	
-	static func is_valid(string: String) -> bool:
-		return true
-	
-	static func convert_string(string: String) -> String:
-		return string
-
+const argBool   = preload("console_arguments.gd").argBool
+const argInt    = preload("console_arguments.gd").argInt
+const argFloat  = preload("console_arguments.gd").argFloat
+const argString = preload("console_arguments.gd").argString
 
 const BOOL   := TYPE_BOOL
 const INT    := TYPE_INT

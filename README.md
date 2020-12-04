@@ -1,20 +1,24 @@
 # Godot-Console
+
 Simple in-game console for Godot 3.2.
 
 ![](https://i.imgur.com/5F3aStc.png)
 
 # Features
+
 - Installed as plugin.
 - Singletone Console.
 - History of entered console commands.
 
 # Installation:
+
 1. Clone or download this project to `addons/godot-console` folder.
 2. Enabled `Godot Console` in Plugins.
 3. Add `ConsoleContainer` node to the scene.
 4. Profit.
 
 # Register console command:
+
 ```gdscript
 func _ready() -> void:
 	var name = "invisible" # Name of the console command. Used to enter a command in the console.
@@ -28,7 +32,9 @@ func _ready() -> void:
 	Console.create_command(name, instance, funcname, desc, args)
 ```
 # Usage:
+
 ## Methods for a console command without arguments:
+
 ```gdscript
 func _ready() -> void:
 	Console.create_command("heal", self, "_command_heal", "Command heals the player")
@@ -41,6 +47,7 @@ func _command_heal() -> String:
 ```
 
 ## Methods for a console command with one argument:
+
 ```gdscript
 func _ready() -> void:
 	Console.create_command("invisible", self, "_command_invisible", "Invisible player", [Console.BOOL])
@@ -52,6 +59,7 @@ func _command_invisible(value: bool) -> String:
 ```
 
 ## Methods for a console command with two argument:
+
 ```gdscript
 func _ready() -> void:
 	Console.create_command("tp", self, "_command_teleport", "Teleports the player", [Console.FLOAT, Console.FLOAT])
@@ -61,3 +69,10 @@ func _command_teleport(x: float, y: float) -> void:
 	self.set_position(Vector2(x, y))
 	return
 ```
+
+## License
+
+Copyright © 2020 FULL NAME and contributors
+
+Unless otherwise specified, files in this repository are licensed under the
+MIT license. See [LICENSE.md](LICENSE.md) for more information.
