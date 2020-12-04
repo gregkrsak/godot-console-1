@@ -72,7 +72,7 @@ func _command_teleport(x: float, y: float) -> void:
 
 ## License
 
-Copyright © 2020 FULL NAME and contributors
+Copyright © 2020 Mansur Isaev and contributors
 
 Unless otherwise specified, files in this repository are licensed under the
 MIT license. See [LICENSE.md](LICENSE.md) for more information.
